@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
+import SketchCanvas from "./SketchCanvas";
 
 type Props = { roomId: string };
 
@@ -9,7 +10,6 @@ const Game: React.FC<Props> = ({ roomId }) => {
   const supabase = useSupabase();
   const [, navigate] = useLocation();
   const [users, setUsers] = useState<string[]>([]);
-  const [gameState, setGameState] = useState<"waiting" | "started">("waiting");
   const username = useMemo(() => generateUsername("_", 0, 10), []);
 
   useEffect(() => {
@@ -47,13 +47,7 @@ const Game: React.FC<Props> = ({ roomId }) => {
     };
   }, [navigate, roomId, supabase, username]);
 
-  useEffect(() => {
-    if (users.length === 2) {
-      setGameState("started");
-    }
-  }, [users.length]);
-
-  if (gameState === "waiting") {
+  if (users.length < 2) {
     return (
       <div>
         <h2>Connected Users:</h2>
@@ -68,13 +62,9 @@ const Game: React.FC<Props> = ({ roomId }) => {
   }
 
   return (
-    <div>
+    <div className="w-2/5 h-96">
       <h2>Game Started!</h2>
-      <ul>
-        {users.map((user) => (
-          <li key={user}>{user}</li>
-        ))}
-      </ul>
+      <SketchCanvas />
     </div>
   );
 };
