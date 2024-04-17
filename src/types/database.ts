@@ -37,14 +37,17 @@ export type Database = {
       rooms: {
         Row: {
           created_at: string | null;
+          name: string;
           room_id: string;
         };
         Insert: {
           created_at?: string | null;
+          name: string;
           room_id?: string;
         };
         Update: {
           created_at?: string | null;
+          name?: string;
           room_id?: string;
         };
         Relationships: [];

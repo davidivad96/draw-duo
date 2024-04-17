@@ -1,6 +1,8 @@
 import { useLocation, useSearch } from "wouter";
+import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
 import Toast from "../components/Toast";
+import { capitalize } from "../utils";
 import { ERROR_MESSAGES } from "../constants";
 
 const Home: React.FC = () => {
@@ -12,7 +14,7 @@ const Home: React.FC = () => {
   const onCreateNewRoom = async () => {
     const { data, error } = await supabase
       .from("rooms")
-      .insert({})
+      .insert({ name: capitalize(generateUsername(" ", 0, 20)) })
       .select("room_id")
       .single();
     if (!data || error) {
