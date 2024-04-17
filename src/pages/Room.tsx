@@ -16,9 +16,8 @@ const Room: React.FC<Props> = ({ roomId }) => {
         .select("room_id")
         .eq("room_id", roomId)
         .maybeSingle();
-
       if (!data || error) {
-        navigate("/");
+        navigate("/?error=room_not_found");
       }
     };
     fetchRoom();
