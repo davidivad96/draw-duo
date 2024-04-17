@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useSupabase } from "../hooks/useSupabase";
-import ConnectedUsers from "../components/ConnectedUsers";
+import Game from "../components/Game";
 
 type Props = { roomId: string };
 
@@ -27,7 +27,7 @@ const Room: React.FC<Props> = ({ roomId }) => {
   return (
     <div className="flex flex-1 flex-col justify-center items-center gap-8">
       <h1>Room {roomId}</h1>
-      <ConnectedUsers roomId={roomId} />
+      <Game roomId={roomId} />
     </div>
   );
 };
