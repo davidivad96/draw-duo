@@ -7,7 +7,7 @@ Draw Duo is a drawing game that allows two players to collaborate on a drawing. 
 ## Tech stack
 
 - [React](https://react.dev/) with [TypeScript](https://www.typescriptlang.org/)
-- [Supabase](https://supabase.com/) for real-time database
+- [Supabase](https://supabase.com/) for real-time capabilities
 - Styling with [Tailwind CSS](https://tailwindcss.com/)
 
 ## Installation
