@@ -34,7 +34,21 @@ export type Database = {
   };
   public: {
     Tables: {
-      [_ in never]: never;
+      rooms: {
+        Row: {
+          created_at: string | null;
+          room_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          room_id?: string;
+        };
+        Update: {
+          created_at?: string | null;
+          room_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
