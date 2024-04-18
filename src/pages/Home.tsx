@@ -38,10 +38,9 @@ const Home: React.FC = () => {
           <select
             className="text-black"
             onChange={(e) => setGameMode(e.target.value as GameMode)}
+            value={gameMode}
           >
-            <option value="split-draw" selected>
-              SplitDraw
-            </option>
+            <option value="split-draw">SplitDraw</option>
             <option value="copycat">Copycat</option>
           </select>
         </form>

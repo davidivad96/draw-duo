@@ -2,20 +2,22 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useSupabase } from "../hooks/useSupabase";
 import Game from "../components/Game";
+import { GameMode } from "../types";
 
 type Props = { roomId: string };
 
 const Room: React.FC<Props> = ({ roomId }) => {
   const supabase = useSupabase();
   const [, navigate] = useLocation();
-  const [roomName, setRoomName] = useState<string | null>(null);
-  const [imageName, setImageName] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState<string>("");
+  const [imageName, setImageName] = useState<string>("flower_pot");
+  const [gameMode, setGameMode] = useState<GameMode>("split-draw");
 
   useEffect(() => {
     const fetchRoom = async () => {
       const { data, error } = await supabase
         .from("rooms")
-        .select("room_id, name, image_name")
+        .select("room_id, name, image_name, game_mode")
         .eq("room_id", roomId)
         .maybeSingle();
 
@@ -24,6 +26,7 @@ const Room: React.FC<Props> = ({ roomId }) => {
       }
       setRoomName(data!.name);
       setImageName(data!.image_name);
+      setGameMode(data!.game_mode);
     };
     fetchRoom();
   }, [navigate, roomId, supabase]);
@@ -35,8 +38,9 @@ const Room: React.FC<Props> = ({ roomId }) => {
       </p>
       <Game
         roomId={roomId}
-        imageName={imageName || "flower_pot"}
+        imageName={imageName}
         setImageName={setImageName}
+        gameMode={gameMode}
       />
     </div>
   );

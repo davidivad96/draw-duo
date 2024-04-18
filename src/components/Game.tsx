@@ -5,8 +5,9 @@ import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
 import SketchCanvas from "./SketchCanvas";
 import Toast from "./Toast";
-import Results from "./Results";
-import { ToastType } from "../types";
+import ResultsSplitDraw from "./ResultsSplitDraw";
+import ResultsCopycat from "./ResultsCopycat";
+import { GameMode, ToastType } from "../types";
 import { getRandomElement } from "../utils";
 import { IMAGE_NAMES } from "../constants";
 
@@ -14,9 +15,15 @@ type Props = {
   roomId: string;
   imageName: string;
   setImageName: (newImageName: string) => void;
+  gameMode: GameMode;
 };
 
-const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
+const Game: React.FC<Props> = ({
+  roomId,
+  imageName,
+  setImageName,
+  gameMode,
+}) => {
   const supabase = useSupabase();
   const [, navigate] = useLocation();
   const [roomChannel, setRoomChannel] = useState<RealtimeChannel | null>(null);
@@ -52,8 +59,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
       .from("rooms")
       .update({ image_name: newImageName })
       .eq("room_id", roomId);
-    setImageName(newImageName);
-  }, [roomId, setImageName, supabase]);
+  }, [roomId, supabase]);
 
   useEffect(() => {
     // Create a temporary channel to check if there are already 2 users in the room
@@ -203,12 +209,21 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
   if (selfHasFinished && otherHasFinished) {
     return (
       <>
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-4">
           <h2>Result:</h2>
-          <Results
-            left={users[0] === username ? images.self : images.other}
-            right={users[1] === username ? images.self : images.other}
-          />
+          {gameMode === "split-draw" ? (
+            <ResultsSplitDraw
+              left={users[0] === username ? images.self : images.other}
+              right={users[1] === username ? images.self : images.other}
+              reference={`src/assets/${imageName}.png`}
+            />
+          ) : (
+            <ResultsCopycat
+              self={images.self}
+              other={images.other}
+              reference={`src/assets/${imageName}.png`}
+            />
+          )}
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
             onClick={onPlayAgain}
@@ -236,8 +251,12 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
       <div className="flex flex-row justify-around items-center gap-4 w-full">
         <div className="flex flex-col items-center gap-2">
           <p className="text-center">
-            Draw the {users[0] === username ? "left" : "right"} part of the
-            reference image:
+            {gameMode === "split-draw"
+              ? `Draw the ${
+                  users[0] === username ? "left" : "right"
+                } part of the
+            reference image:`
+              : "Draw the reference image:"}
           </p>
           <img
             src={`src/assets/${imageName}.png`}
