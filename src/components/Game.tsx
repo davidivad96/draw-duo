@@ -19,9 +19,15 @@ const Game: React.FC<Props> = ({ roomId }) => {
     message?: string;
     type?: ToastType;
   }>({ display: false });
-  const [selfFinishedDrawing, setSelfFinishedDrawing] = useState(false);
-  const [otherFinishedDrawing, setOtherFinishedDrawing] = useState(false);
+  const [images, setImages] = useState<{ self: string; other: string }>({
+    self: "",
+    other: "",
+  });
   const username = useMemo(() => generateUsername("_", 0, 10), []);
+  const [selfHasFinished, otherHasFinished] = useMemo(
+    () => [images.self.length > 0, images.other.length > 0],
+    [images]
+  );
 
   useEffect(() => {
     // Create a temporary channel to check if there are already 2 users in the room
@@ -50,8 +56,8 @@ const Game: React.FC<Props> = ({ roomId }) => {
       .on(
         "broadcast",
         { event: "finish_drawing" },
-        ({ payload: { message } }) => {
-          setOtherFinishedDrawing(true);
+        ({ payload: { base64image, message } }) => {
+          setImages((prev) => ({ ...prev, other: base64image }));
           setToast({
             display: true,
             message,
@@ -71,13 +77,16 @@ const Game: React.FC<Props> = ({ roomId }) => {
     };
   }, [navigate, roomId, supabase, username]);
 
-  const onFinishDrawing = async () => {
-    setSelfFinishedDrawing(true);
+  const onFinishDrawing = async (base64image: string) => {
+    setImages((prev) => ({ ...prev, self: base64image }));
     if (roomChannel) {
       await roomChannel.send({
         type: "broadcast",
         event: "finish_drawing",
-        payload: { message: "Your co-player has finished drawing!" },
+        payload: {
+          base64image,
+          message: "Your co-player has finished drawing!",
+        },
       });
     }
   };
@@ -96,7 +105,7 @@ const Game: React.FC<Props> = ({ roomId }) => {
     );
   }
 
-  if (selfFinishedDrawing && otherFinishedDrawing) {
+  if (selfHasFinished && otherHasFinished) {
     return (
       <div className="flex flex-col items-center gap-2">
         <h2>Both players have finished drawing!</h2>
@@ -114,15 +123,11 @@ const Game: React.FC<Props> = ({ roomId }) => {
     <>
       <div className="flex flex-col items-center gap-4 w-2/5 h-96">
         <h2>Game Started!</h2>
-        <SketchCanvas />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
-          onClick={onFinishDrawing}
-          disabled={selfFinishedDrawing}
-        >
-          Finish drawing
-        </button>
-        {selfFinishedDrawing && (
+        <SketchCanvas
+          onFinishDrawing={onFinishDrawing}
+          finishDrawingButtonDisabled={selfHasFinished}
+        />
+        {selfHasFinished && (
           <p className="text-center">Waiting for your co-player to finish...</p>
         )}
       </div>

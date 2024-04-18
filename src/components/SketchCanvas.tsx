@@ -4,7 +4,15 @@ import {
   type ReactSketchCanvasRef,
 } from "react-sketch-canvas";
 
-const SketchCanvas: React.FC = () => {
+type Props = {
+  onFinishDrawing: (base64image: string) => Promise<void>;
+  finishDrawingButtonDisabled: boolean;
+};
+
+const SketchCanvas: React.FC<Props> = ({
+  onFinishDrawing,
+  finishDrawingButtonDisabled,
+}) => {
   const [strokeColor, setStrokeColor] = useState("#6497eb");
   const [strokeEraserWidth, setStrokeEraserWidth] = useState(4);
   const [eraseMode, setEraseMode] = useState(false);
@@ -29,66 +37,79 @@ const SketchCanvas: React.FC = () => {
   const handleClear = () => canvasRef.current?.clearCanvas();
 
   return (
-    <div className="flex flex-col gap-4 items-center">
-      <div className="flex flex-row gap-2">
+    <>
+      <div className="flex flex-col gap-4 items-center">
+        <div className="flex flex-row gap-2">
+          <input
+            id="color-picker"
+            type="color"
+            value={strokeColor}
+            onChange={handleStrokeColorChange}
+          />
+          <div className="w-0.5 bg-white rounded-full" />
+          <button
+            className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
+            disabled={!eraseMode}
+            onClick={toggleEraseMode}
+          >
+            Pen
+          </button>
+          <button
+            className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
+            disabled={eraseMode}
+            onClick={toggleEraseMode}
+          >
+            Eraser
+          </button>
+          <div className="w-0.5 bg-white rounded-full" />
+          <button
+            className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
+            onClick={handleUndo}
+          >
+            Undo
+          </button>
+          <button
+            className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
+            onClick={handleRedo}
+          >
+            Redo
+          </button>
+          <button
+            className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
         <input
-          id="color-picker"
-          type="color"
-          value={strokeColor}
-          onChange={handleStrokeColorChange}
+          type="range"
+          min="1"
+          max="20"
+          step="1"
+          className="cursor-pointer w-56"
+          value={strokeEraserWidth}
+          onChange={handleStrokeEraserWidthChange}
         />
-        <div className="w-0.5 bg-white rounded-full" />
-        <button
-          className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
-          disabled={!eraseMode}
-          onClick={toggleEraseMode}
-        >
-          Pen
-        </button>
-        <button
-          className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
-          disabled={eraseMode}
-          onClick={toggleEraseMode}
-        >
-          Eraser
-        </button>
-        <div className="w-0.5 bg-white rounded-full" />
-        <button
-          className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
-          onClick={handleUndo}
-        >
-          Undo
-        </button>
-        <button
-          className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
-          onClick={handleRedo}
-        >
-          Redo
-        </button>
-        <button
-          className="bg-white hover:bg-blue-200 text-blue-500 font-bold py-2 px-4 border border-blue-700 rounded"
-          onClick={handleClear}
-        >
-          Clear
-        </button>
+        <ReactSketchCanvas
+          id="canvas"
+          ref={canvasRef}
+          strokeColor={strokeColor}
+          strokeWidth={strokeEraserWidth}
+          eraserWidth={strokeEraserWidth}
+        />
       </div>
-      <input
-        type="range"
-        min="1"
-        max="20"
-        step="1"
-        className="cursor-pointer w-56"
-        value={strokeEraserWidth}
-        onChange={handleStrokeEraserWidthChange}
-      />
-      <ReactSketchCanvas
-        id="canvas"
-        ref={canvasRef}
-        strokeColor={strokeColor}
-        strokeWidth={strokeEraserWidth}
-        eraserWidth={strokeEraserWidth}
-      />
-    </div>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
+        onClick={async () => {
+          if (canvasRef.current) {
+            onFinishDrawing(await canvasRef.current.exportImage("png"));
+          }
+        }}
+        disabled={finishDrawingButtonDisabled}
+      >
+        Finish drawing
+      </button>
+    </>
   );
 };
 
