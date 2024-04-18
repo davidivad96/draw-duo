@@ -218,12 +218,12 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
         <h2>Game Started!</h2>
         <p className="text-center">
           Draw the {users[0] === username ? "left" : "right"} part of the
-          reference image
+          reference image:
         </p>
         <img
           src={`src/assets/${imageName}.png`}
           alt="Reference image"
-          className="w-1/4"
+          className="max-w-full"
         />
         <SketchCanvas
           onFinishDrawing={onFinishDrawing}

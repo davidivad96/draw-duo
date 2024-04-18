@@ -39,6 +39,13 @@ const SketchCanvas: React.FC<Props> = ({
   return (
     <>
       <div className="flex flex-col gap-4 items-center">
+        <ReactSketchCanvas
+          id="canvas"
+          ref={canvasRef}
+          strokeColor={strokeColor}
+          strokeWidth={strokeEraserWidth}
+          eraserWidth={strokeEraserWidth}
+        />
         <div className="flex flex-row gap-2">
           <input
             id="color-picker"
@@ -89,13 +96,6 @@ const SketchCanvas: React.FC<Props> = ({
           className="cursor-pointer w-56"
           value={strokeEraserWidth}
           onChange={handleStrokeEraserWidthChange}
-        />
-        <ReactSketchCanvas
-          id="canvas"
-          ref={canvasRef}
-          strokeColor={strokeColor}
-          strokeWidth={strokeEraserWidth}
-          eraserWidth={strokeEraserWidth}
         />
       </div>
       <button
