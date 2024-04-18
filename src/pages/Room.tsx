@@ -29,7 +29,7 @@ const Room: React.FC<Props> = ({ roomId }) => {
   }, [navigate, roomId, supabase]);
 
   return (
-    <div className="flex flex-1 flex-col justify-start items-center gap-8">
+    <div className="flex flex-1 flex-col justify-start items-center gap-8 w-full">
       <p className="text-xl">
         Room <span className="font-bold">{roomName}</span>
       </p>

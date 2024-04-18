@@ -233,7 +233,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
 
   return (
     <>
-      <div className="flex flex-row justify-center items-center gap-4">
+      <div className="flex flex-row justify-around items-center gap-4 w-full">
         <div className="flex flex-col items-center gap-2">
           <p className="text-center">
             Draw the {users[0] === username ? "left" : "right"} part of the
@@ -242,7 +242,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
           <img
             src={`src/assets/${imageName}.png`}
             alt="Reference image"
-            className="w-1/5"
+            className="w-1/2"
           />
         </div>
         <div className="flex flex-col items-center gap-2">
