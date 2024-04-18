@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ToastType } from "../types";
 
 type Props = {
   message: string;
-  type: "success" | "info" | "error";
+  type: ToastType;
   onClose: () => void;
 };
 
@@ -20,7 +21,7 @@ const Toast: React.FC<Props> = ({ message, type, onClose }) => (
   >
     <span className="font-normal text-md">
       {type === "error" ? "Error: " : type === "success" ? "Success: " : ""}
-      {message}.
+      {message}
     </span>
     <XMarkIcon className="w-5 h-5 cursor-pointer" onClick={onClose} />
   </div>
