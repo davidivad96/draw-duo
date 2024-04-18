@@ -84,6 +84,11 @@ const Game: React.FC<Props> = ({
       })
       .on("presence", { event: "leave" }, ({ key }) => {
         setUsers((prev) => prev.filter((user) => user !== key));
+        setToast({
+          display: true,
+          message: "Your friend has left the room!",
+          type: "info",
+        });
       })
       .on(
         "broadcast",
