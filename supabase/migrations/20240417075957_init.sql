@@ -1,8 +1,15 @@
+-- Types
+CREATE TYPE game_mode AS ENUM(
+  'split-draw',
+  'copycat'
+);
+
 -- Tables
 CREATE TABLE rooms(
   room_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   image_name text NOT NULL,
+  game_mode game_mode NOT NULL,
   created_at timestamp with time zone DEFAULT now(),
   last_round_at timestamp with time zone DEFAULT NULL
 );

@@ -37,6 +37,7 @@ export type Database = {
       rooms: {
         Row: {
           created_at: string | null;
+          game_mode: Database["public"]["Enums"]["game_mode"];
           image_name: string;
           last_round_at: string | null;
           name: string;
@@ -44,6 +45,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string | null;
+          game_mode: Database["public"]["Enums"]["game_mode"];
           image_name: string;
           last_round_at?: string | null;
           name: string;
@@ -51,6 +53,7 @@ export type Database = {
         };
         Update: {
           created_at?: string | null;
+          game_mode?: Database["public"]["Enums"]["game_mode"];
           image_name?: string;
           last_round_at?: string | null;
           name?: string;
@@ -66,7 +69,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      game_mode: "split-draw" | "copycat";
     };
     CompositeTypes: {
       [_ in never]: never;
