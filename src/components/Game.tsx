@@ -99,7 +99,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
           }
           setToast({
             display: true,
-            message: "Your co-player wants to play again!",
+            message: "Your friend wants to play again!",
             type: "info",
           });
           return { ...prev, other: true };
@@ -144,7 +144,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
         event: "finish_drawing",
         payload: {
           base64image,
-          message: "Your co-player has finished drawing!",
+          message: "Your friend has finished drawing!",
         },
       });
     }
@@ -169,15 +169,34 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
 
   if (users.length < 2) {
     return (
-      <div>
-        <h2>Connected Users:</h2>
-        <ul>
-          {users.map((user) => (
-            <li key={user}>{user}</li>
-          ))}
-        </ul>
-        <p>Waiting for another player to join...</p>
-      </div>
+      <>
+        <div className="flex flex-col items-center gap-4">
+          <h2 className="underline">You are connected!</h2>
+          <p>Waiting for another player to join...</p>
+          <p>Share this link with your friend:</p>
+          <code>{window.location.href}</code>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              setToast({
+                display: true,
+                message: "Link has been copied!",
+                type: "info",
+              });
+            }}
+          >
+            Copy link
+          </button>
+        </div>
+        {toast.display && (
+          <Toast
+            message={toast.message!}
+            type={toast.type!}
+            onClose={() => setToast({ display: false })}
+          />
+        )}
+      </>
     );
   }
 
@@ -198,7 +217,7 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
             Play Again
           </button>
           {wantToPlayAgain.self && (
-            <p className="text-center">Waiting for your co-player...</p>
+            <p className="text-center">Waiting for your friend...</p>
           )}
         </div>
         {toast.display && (
@@ -214,24 +233,27 @@ const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-4 w-2/5">
-        <h2>Game Started!</h2>
-        <p className="text-center">
-          Draw the {users[0] === username ? "left" : "right"} part of the
-          reference image:
-        </p>
-        <img
-          src={`src/assets/${imageName}.png`}
-          alt="Reference image"
-          className="max-w-full"
-        />
-        <SketchCanvas
-          onFinishDrawing={onFinishDrawing}
-          finishDrawingButtonDisabled={selfHasFinished}
-        />
-        {selfHasFinished && (
-          <p className="text-center">Waiting for your co-player to finish...</p>
-        )}
+      <div className="flex flex-row justify-center items-center gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-center">
+            Draw the {users[0] === username ? "left" : "right"} part of the
+            reference image:
+          </p>
+          <img
+            src={`src/assets/${imageName}.png`}
+            alt="Reference image"
+            className="w-1/5"
+          />
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <SketchCanvas
+            onFinishDrawing={onFinishDrawing}
+            finishDrawingButtonDisabled={selfHasFinished}
+          />
+          {selfHasFinished && (
+            <p className="text-center">Waiting for your friend to finish...</p>
+          )}
+        </div>
       </div>
       {toast.display && (
         <Toast

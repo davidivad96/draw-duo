@@ -28,18 +28,12 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center items-stretch gap-2 max-w-sm">
+      <div className="flex flex-1 flex-col justify-center">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
           onClick={onCreateNewRoom}
         >
           Create new room
-        </button>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
-          onClick={() => {}}
-        >
-          Join room
         </button>
       </div>
       {error && (
