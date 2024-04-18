@@ -2,7 +2,8 @@
 CREATE TABLE rooms(
   room_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
-  created_at timestamp with time zone DEFAULT now()
+  created_at timestamp with time zone DEFAULT now(),
+  last_round_at timestamp with time zone DEFAULT NULL
 );
 
 -- Policies
@@ -15,6 +16,10 @@ CREATE POLICY "Public access to rooms" ON rooms
 CREATE POLICY "Any user can insert rooms" ON rooms
   FOR INSERT
     WITH CHECK (TRUE);
+
+CREATE POLICY "Any user can update rooms" ON rooms
+  FOR UPDATE
+    USING (TRUE);
 
 CREATE POLICY "Any user can delete rooms" ON rooms
   FOR DELETE

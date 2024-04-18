@@ -96,6 +96,18 @@ const Game: React.FC<Props> = ({ roomId }) => {
     };
   }, [navigate, roomId, supabase, username]);
 
+  useEffect(() => {
+    const updateLastRoundAt = async () => {
+      await supabase
+        .from("rooms")
+        .update({ last_round_at: new Date().toISOString() })
+        .eq("room_id", roomId);
+    };
+    if (selfHasFinished && otherHasFinished) {
+      updateLastRoundAt();
+    }
+  }, [selfHasFinished, otherHasFinished, supabase, roomId]);
+
   const onFinishDrawing = async (base64image: string) => {
     setImages((prev) => ({ ...prev, self: base64image }));
     if (roomChannel) {
