@@ -5,6 +5,7 @@ import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
 import SketchCanvas from "./SketchCanvas";
 import Toast from "./Toast";
+import Results from "./Results";
 import { ToastType } from "../types";
 
 type Props = { roomId: string };
@@ -108,13 +109,11 @@ const Game: React.FC<Props> = ({ roomId }) => {
   if (selfHasFinished && otherHasFinished) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <h2>Both players have finished drawing!</h2>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
-          onClick={() => navigate("/results")}
-        >
-          View results
-        </button>
+        <h2>Result:</h2>
+        <Results
+          left={users[0] === username ? images.self : images.other}
+          right={users[1] === username ? images.self : images.other}
+        />
       </div>
     );
   }
@@ -123,6 +122,10 @@ const Game: React.FC<Props> = ({ roomId }) => {
     <>
       <div className="flex flex-col items-center gap-4 w-2/5 h-96">
         <h2>Game Started!</h2>
+        <p className="text-center">
+          Draw the {users[0] === username ? "left" : "right"} part of the
+          reference image
+        </p>
         <SketchCanvas
           onFinishDrawing={onFinishDrawing}
           finishDrawingButtonDisabled={selfHasFinished}
