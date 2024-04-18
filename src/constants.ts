@@ -4,15 +4,23 @@ export const ERROR_MESSAGES = {
 };
 
 export const IMAGE_NAMES = [
+  "bee",
   "bird_house",
+  "bird",
   "butterfly",
   "cherry",
+  "clouds_and_sun",
   "dragonfly",
   "easter_egg",
   "flower_pot",
+  "forest",
+  "garden",
   "ice_cream",
   "kite",
   "ladybug",
+  "lemonade",
+  "maple_leaf",
+  "mushroom",
   "pamela_hat",
   "paperboat",
   "pineapple",
@@ -21,6 +29,8 @@ export const IMAGE_NAMES = [
   "rainbow",
   "raincoat",
   "snail",
+  "spring_calendar",
   "strawberry",
+  "thunder",
   "tulip",
 ];
