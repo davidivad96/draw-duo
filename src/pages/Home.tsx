@@ -36,7 +36,7 @@ const Home: React.FC = () => {
         <form className="flex flex-row gap-2">
           <label>Choose a game mode:</label>
           <select
-            className="text-black"
+            className="text-black bg-white"
             onChange={(e) => setGameMode(e.target.value as GameMode)}
             value={gameMode}
           >
