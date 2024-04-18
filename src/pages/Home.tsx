@@ -2,8 +2,8 @@ import { useLocation, useSearch } from "wouter";
 import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
 import Toast from "../components/Toast";
-import { capitalize } from "../utils";
-import { ERROR_MESSAGES } from "../constants";
+import { capitalize, getRandomElement } from "../utils";
+import { ERROR_MESSAGES, IMAGE_NAMES } from "../constants";
 
 const Home: React.FC = () => {
   const supabase = useSupabase();
@@ -14,7 +14,10 @@ const Home: React.FC = () => {
   const onCreateNewRoom = async () => {
     const { data, error } = await supabase
       .from("rooms")
-      .insert({ name: capitalize(generateUsername(" ", 0, 20)) })
+      .insert({
+        name: capitalize(generateUsername(" ", 0, 20)),
+        image_name: getRandomElement(IMAGE_NAMES),
+      })
       .select("room_id")
       .single();
     if (!data || error) {

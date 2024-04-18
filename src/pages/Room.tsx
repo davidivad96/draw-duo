@@ -9,18 +9,21 @@ const Room: React.FC<Props> = ({ roomId }) => {
   const supabase = useSupabase();
   const [, navigate] = useLocation();
   const [roomName, setRoomName] = useState<string | null>(null);
+  const [imageName, setImageName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRoom = async () => {
       const { data, error } = await supabase
         .from("rooms")
-        .select("room_id, name")
+        .select("room_id, name, image_name")
         .eq("room_id", roomId)
         .maybeSingle();
+
       if (!data || error) {
         navigate("/?error=room_not_found");
       }
       setRoomName(data!.name);
+      setImageName(data!.image_name);
     };
     fetchRoom();
   }, [navigate, roomId, supabase]);
@@ -30,7 +33,11 @@ const Room: React.FC<Props> = ({ roomId }) => {
       <p className="text-xl">
         Room <span className="font-bold">{roomName}</span>
       </p>
-      <Game roomId={roomId} />
+      <Game
+        roomId={roomId}
+        imageName={imageName || "flower_pot"}
+        setImageName={setImageName}
+      />
     </div>
   );
 };

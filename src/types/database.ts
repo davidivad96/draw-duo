@@ -37,18 +37,21 @@ export type Database = {
       rooms: {
         Row: {
           created_at: string | null;
+          image_name: string;
           last_round_at: string | null;
           name: string;
           room_id: string;
         };
         Insert: {
           created_at?: string | null;
+          image_name: string;
           last_round_at?: string | null;
           name: string;
           room_id?: string;
         };
         Update: {
           created_at?: string | null;
+          image_name?: string;
           last_round_at?: string | null;
           name?: string;
           room_id?: string;

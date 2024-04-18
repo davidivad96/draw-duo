@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useLocation } from "wouter";
 import { generateUsername } from "unique-username-generator";
@@ -7,10 +7,16 @@ import SketchCanvas from "./SketchCanvas";
 import Toast from "./Toast";
 import Results from "./Results";
 import { ToastType } from "../types";
+import { getRandomElement } from "../utils";
+import { IMAGE_NAMES } from "../constants";
 
-type Props = { roomId: string };
+type Props = {
+  roomId: string;
+  imageName: string;
+  setImageName: (newImageName: string) => void;
+};
 
-const Game: React.FC<Props> = ({ roomId }) => {
+const Game: React.FC<Props> = ({ roomId, imageName, setImageName }) => {
   const supabase = useSupabase();
   const [, navigate] = useLocation();
   const [roomChannel, setRoomChannel] = useState<RealtimeChannel | null>(null);
@@ -33,6 +39,21 @@ const Game: React.FC<Props> = ({ roomId }) => {
     [images]
   );
   const username = useMemo(() => generateUsername("_", 0, 10), []);
+
+  const resetGame = useCallback(async () => {
+    setImages({ self: "", other: "" });
+    setToast({
+      display: true,
+      message: "Game has been reset!",
+      type: "info",
+    });
+    const newImageName = getRandomElement(IMAGE_NAMES);
+    await supabase
+      .from("rooms")
+      .update({ image_name: newImageName })
+      .eq("room_id", roomId);
+    setImageName(newImageName);
+  }, [roomId, setImageName, supabase]);
 
   useEffect(() => {
     // Create a temporary channel to check if there are already 2 users in the room
@@ -84,6 +105,13 @@ const Game: React.FC<Props> = ({ roomId }) => {
           return { ...prev, other: true };
         });
       })
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "rooms" },
+        ({ new: { image_name } }) => {
+          setImageName(image_name);
+        }
+      )
       .subscribe(async (status) => {
         if (status !== "SUBSCRIBED") {
           return;
@@ -94,7 +122,7 @@ const Game: React.FC<Props> = ({ roomId }) => {
       room.untrack();
       supabase.removeChannel(room);
     };
-  }, [navigate, roomId, supabase, username]);
+  }, [navigate, resetGame, roomId, setImageName, supabase, username]);
 
   useEffect(() => {
     const updateLastRoundAt = async () => {
@@ -120,15 +148,6 @@ const Game: React.FC<Props> = ({ roomId }) => {
         },
       });
     }
-  };
-
-  const resetGame = async () => {
-    setImages({ self: "", other: "" });
-    setToast({
-      display: true,
-      message: "Game has been reset!",
-      type: "info",
-    });
   };
 
   const onPlayAgain = async () => {
@@ -202,7 +221,7 @@ const Game: React.FC<Props> = ({ roomId }) => {
           reference image
         </p>
         <img
-          src="src/assets/flower.png"
+          src={`src/assets/${imageName}.png`}
           alt="Reference image"
           className="w-1/4"
         />
