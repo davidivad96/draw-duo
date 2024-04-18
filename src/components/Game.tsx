@@ -24,11 +24,15 @@ const Game: React.FC<Props> = ({ roomId }) => {
     self: "",
     other: "",
   });
-  const username = useMemo(() => generateUsername("_", 0, 10), []);
+  const [wantToPlayAgain, setWantToPlayAgain] = useState<{
+    self: boolean;
+    other: boolean;
+  }>({ self: false, other: false });
   const [selfHasFinished, otherHasFinished] = useMemo(
     () => [images.self.length > 0, images.other.length > 0],
     [images]
   );
+  const username = useMemo(() => generateUsername("_", 0, 10), []);
 
   useEffect(() => {
     // Create a temporary channel to check if there are already 2 users in the room
@@ -66,6 +70,20 @@ const Game: React.FC<Props> = ({ roomId }) => {
           });
         }
       )
+      .on("broadcast", { event: "reset_game" }, () => {
+        setWantToPlayAgain((prev) => {
+          if (prev.self) {
+            resetGame();
+            return { self: false, other: false };
+          }
+          setToast({
+            display: true,
+            message: "Your co-player wants to play again!",
+            type: "info",
+          });
+          return { ...prev, other: true };
+        });
+      })
       .subscribe(async (status) => {
         if (status !== "SUBSCRIBED") {
           return;
@@ -92,6 +110,32 @@ const Game: React.FC<Props> = ({ roomId }) => {
     }
   };
 
+  const resetGame = async () => {
+    setImages({ self: "", other: "" });
+    setToast({
+      display: true,
+      message: "Game has been reset!",
+      type: "info",
+    });
+  };
+
+  const onPlayAgain = async () => {
+    setWantToPlayAgain((prev) => {
+      if (prev.other) {
+        resetGame();
+        return { self: false, other: false };
+      }
+      return { ...prev, self: true };
+    });
+    if (roomChannel) {
+      await roomChannel.send({
+        type: "broadcast",
+        event: "reset_game",
+        payload: {},
+      });
+    }
+  };
+
   if (users.length < 2) {
     return (
       <div>
@@ -108,24 +152,48 @@ const Game: React.FC<Props> = ({ roomId }) => {
 
   if (selfHasFinished && otherHasFinished) {
     return (
-      <div className="flex flex-col items-center gap-2">
-        <h2>Result:</h2>
-        <Results
-          left={users[0] === username ? images.self : images.other}
-          right={users[1] === username ? images.self : images.other}
-        />
-      </div>
+      <>
+        <div className="flex flex-col items-center gap-2">
+          <h2>Result:</h2>
+          <Results
+            left={users[0] === username ? images.self : images.other}
+            right={users[1] === username ? images.self : images.other}
+          />
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
+            onClick={onPlayAgain}
+            disabled={wantToPlayAgain.self}
+          >
+            Play Again
+          </button>
+          {wantToPlayAgain.self && (
+            <p className="text-center">Waiting for your co-player...</p>
+          )}
+        </div>
+        {toast.display && (
+          <Toast
+            message={toast.message!}
+            type={toast.type!}
+            onClose={() => setToast({ display: false })}
+          />
+        )}
+      </>
     );
   }
 
   return (
     <>
-      <div className="flex flex-col items-center gap-4 w-2/5 h-96">
+      <div className="flex flex-col items-center gap-4 w-2/5">
         <h2>Game Started!</h2>
         <p className="text-center">
           Draw the {users[0] === username ? "left" : "right"} part of the
           reference image
         </p>
+        <img
+          src="src/assets/flower.png"
+          alt="Reference image"
+          className="w-1/4"
+        />
         <SketchCanvas
           onFinishDrawing={onFinishDrawing}
           finishDrawingButtonDisabled={selfHasFinished}
