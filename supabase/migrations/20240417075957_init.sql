@@ -42,3 +42,7 @@ SELECT
     WHERE last_round_at IS NULL
       OR last_round_at < now() - interval '1 day' $$);
 
+-- Realtime
+ALTER publication supabase_realtime
+  ADD TABLE rooms;
+
