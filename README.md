@@ -39,3 +39,7 @@ supabase db reset
 6. Run the development server with `npm run dev`
 7. Open [http://localhost:5173/](http://localhost:5173/) in your browser
 8. Have fun!
+
+## Play the game
+
+Visit [https://drawduo.netlify.app/](https://drawduo.netlify.app/) to play the game.
