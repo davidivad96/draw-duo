@@ -2,7 +2,9 @@
 
 ## Description
 
-Draw Duo is a drawing game that allows two players to collaborate on a drawing. The game is played in real-time, each player will focus on a different part of the drawing, trying to recreate a reference image. The players will have a limited amount of time to draw their part of the image, and the game will end either when the time runs out or when the players decide to finish the drawing. The game will then display the reference image and the players' drawing side by side, allowing them to compare their work.
+Draw Duo is a drawing game that allows two players to collaborate on a drawing. The game is played in real-time, each player will focus on a different part of the drawing, trying to recreate a reference image. The players will have a limited amount of time to draw their part of the image, and the game will end when each player finishes its part. The game will then display the reference image and the players' drawing side by side, allowing them to compare their work.
+
+There's an alternative mode where the players will have to draw the entire image, and they will be able to compare their work at the end of the game.
 
 ## Tech stack
 
