@@ -5,6 +5,7 @@ import { generateUsername } from "unique-username-generator";
 import { useSupabase } from "../hooks/useSupabase";
 import SketchCanvas from "./SketchCanvas";
 import Toast from "./Toast";
+import Chat from "./Chat";
 import ResultsSplitDraw from "./ResultsSplitDraw";
 import ResultsCopycat from "./ResultsCopycat";
 import { GameMode, ToastType } from "../types";
@@ -44,6 +45,9 @@ const Game: React.FC<Props> = ({
   const [selfHasFinished, otherHasFinished] = useMemo(
     () => [images.self.length > 0, images.other.length > 0],
     [images]
+  );
+  const [messages, setMessages] = useState<{ text: string; self: boolean }[]>(
+    []
   );
   const username = useMemo(() => generateUsername("_", 0, 10), []);
 
@@ -125,6 +129,13 @@ const Game: React.FC<Props> = ({
         });
       })
       .on(
+        "broadcast",
+        { event: "chat_message" },
+        ({ payload: { message } }) => {
+          setMessages((prev) => [...prev, { text: message, self: false }]);
+        }
+      )
+      .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "rooms" },
         ({ new: { image_name } }) => {
@@ -186,6 +197,17 @@ const Game: React.FC<Props> = ({
     }
   };
 
+  const onSendChatMessage = async (message: string) => {
+    setMessages((prev) => [...prev, { text: message, self: true }]);
+    if (roomChannel) {
+      await roomChannel.send({
+        type: "broadcast",
+        event: "chat_message",
+        payload: { message },
+      });
+    }
+  };
+
   if (users.length < 2) {
     return (
       <>
@@ -224,19 +246,22 @@ const Game: React.FC<Props> = ({
       <>
         <div className="flex flex-col items-center gap-4">
           <h2>Result:</h2>
-          {gameMode === "split-draw" ? (
-            <ResultsSplitDraw
-              left={users[0] === username ? images.self : images.other}
-              right={users[1] === username ? images.self : images.other}
-              reference={`src/assets/${imageName}.png`}
-            />
-          ) : (
-            <ResultsCopycat
-              self={images.self}
-              other={images.other}
-              reference={`src/assets/${imageName}.png`}
-            />
-          )}
+          <div className="flex flex-row items-center gap-4">
+            <Chat messages={messages} sendMessage={onSendChatMessage} />
+            {gameMode === "split-draw" ? (
+              <ResultsSplitDraw
+                left={users[0] === username ? images.self : images.other}
+                right={users[1] === username ? images.self : images.other}
+                reference={`src/assets/${imageName}.png`}
+              />
+            ) : (
+              <ResultsCopycat
+                self={images.self}
+                other={images.other}
+                reference={`src/assets/${imageName}.png`}
+              />
+            )}
+          </div>
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded disabled:opacity-50"
             onClick={onPlayAgain}
@@ -262,6 +287,7 @@ const Game: React.FC<Props> = ({
   return (
     <>
       <div className="flex flex-row justify-around items-center gap-4 w-full">
+        <Chat messages={messages} sendMessage={onSendChatMessage} />
         <div className="flex flex-col items-center gap-2">
           <p className="text-center">
             {gameMode === "split-draw"
