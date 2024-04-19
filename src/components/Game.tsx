@@ -83,22 +83,30 @@ const Game: React.FC<Props> = ({
         setUsers((prev) => [...prev, key]);
       })
       .on("presence", { event: "leave" }, ({ key }) => {
-        setUsers((prev) => prev.filter((user) => user !== key));
-        setToast({
-          display: true,
-          message: "Your friend has left the room!",
-          type: "info",
+        setUsers((prev) => {
+          if (prev.length < 3) {
+            setToast({
+              display: true,
+              message: "Your friend has left the room!",
+              type: "info",
+            });
+          }
+          return prev.filter((user) => user !== key);
         });
       })
       .on(
         "broadcast",
         { event: "finish_drawing" },
         ({ payload: { base64image, message } }) => {
-          setImages((prev) => ({ ...prev, other: base64image }));
-          setToast({
-            display: true,
-            message,
-            type: "info",
+          setImages((prev) => {
+            if (prev.self.length === 0) {
+              setToast({
+                display: true,
+                message,
+                type: "info",
+              });
+            }
+            return { ...prev, other: base64image };
           });
         }
       )
@@ -266,7 +274,7 @@ const Game: React.FC<Props> = ({
           <img
             src={`src/assets/${imageName}.png`}
             alt="Reference image"
-            className="w-1/2"
+            className="w-1/3"
           />
         </div>
         <div className="flex flex-col items-center gap-2">
