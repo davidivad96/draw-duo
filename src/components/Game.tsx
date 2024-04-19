@@ -252,13 +252,13 @@ const Game: React.FC<Props> = ({
               <ResultsSplitDraw
                 left={users[0] === username ? images.self : images.other}
                 right={users[1] === username ? images.self : images.other}
-                reference={`src/assets/${imageName}.png`}
+                reference={`assets/${imageName}.png`}
               />
             ) : (
               <ResultsCopycat
                 self={images.self}
                 other={images.other}
-                reference={`src/assets/${imageName}.png`}
+                reference={`assets/${imageName}.png`}
               />
             )}
           </div>
@@ -298,7 +298,7 @@ const Game: React.FC<Props> = ({
               : "Draw the reference image:"}
           </p>
           <img
-            src={`src/assets/${imageName}.png`}
+            src={`assets/${imageName}.png`}
             alt="Reference image"
             className="w-1/3 min-w-60"
           />
