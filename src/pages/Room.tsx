@@ -33,9 +33,17 @@ const Room: React.FC<Props> = ({ roomId }) => {
 
   return (
     <div className="flex flex-1 flex-col justify-start items-center gap-8 w-full">
-      <p className="text-xl">
-        Room <span className="font-bold">{roomName}</span>
-      </p>
+      <div className="flex flex-row justify-between items-center w-full">
+        <p className="text-xl">
+          Room <span className="font-bold">{roomName}</span>
+        </p>
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-700 rounded"
+          onClick={() => navigate("/")}
+        >
+          Leave room
+        </button>
+      </div>
       <Game
         roomId={roomId}
         imageName={imageName}

@@ -7,7 +7,7 @@ type Props = {
 
 const Chat: React.FC<Props> = ({ messages, sendMessage }) => (
   <div className="flex flex-col min-w-72">
-    <p className="font-bold">Chat</p>
+    <p className="font-bold">Chat:</p>
     <div className="h-80 bg-white overflow-scroll">
       {messages.map(({ text, self }, index) => (
         <p

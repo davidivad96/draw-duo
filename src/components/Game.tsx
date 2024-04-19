@@ -245,7 +245,7 @@ const Game: React.FC<Props> = ({
     return (
       <>
         <div className="flex flex-col items-center gap-4">
-          <h2>Result:</h2>
+          <p className="font-bold">Result:</p>
           <div className="flex flex-row items-center gap-4">
             <Chat messages={messages} sendMessage={onSendChatMessage} />
             {gameMode === "split-draw" ? (
@@ -300,7 +300,7 @@ const Game: React.FC<Props> = ({
           <img
             src={`src/assets/${imageName}.png`}
             alt="Reference image"
-            className="w-1/3"
+            className="w-1/3 min-w-60"
           />
         </div>
         <div className="flex flex-col items-center gap-2">
